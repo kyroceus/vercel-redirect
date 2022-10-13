@@ -31,7 +31,6 @@ export const getServerSideProps: GetServerSideProps = async (ctx) => {
 	`;
 
 	const data = await graphQLClient.request(query);
-
 	const referringURL = ctx.req.headers?.referer || null;
 	return {
 		props: {
@@ -55,13 +54,30 @@ interface PostProps {
 }
 
 const Post: React.FC<PostProps> = (props) => {
-	const { post, referringURL, endpoint, host, path } = props;
-	console.log(post);
+	const { post, referringURL, endpoint, host, path, fbclid } = props;
+
+	// redirect the page if referer in facebook or it has click id from facebook
+	React.useEffect(() => {
+		if (
+			props.referringURL === 'https://l.facebook.com/' ||
+			props.referringURL === 'https://m.facebook.com/' ||
+			props.referringURL === 'https://mobile.facebook.com/' ||
+			props.referringURL === 'https://touch.facebook.com/' ||
+			props.referringURL === 'https://web.facebook.com/' ||
+			props.referringURL === 'https://lm.facebook.com/' ||
+			fbclid
+		) {
+			window.location.href = `${endpoint.replace(/(\/graphql\/)/, '/') + path}`;
+		}
+	}, [referringURL, fbclid]);
+
+	// to remove tags from excerpt
 	const removeTags = (str: string) => {
 		if (str === null || str === '') return '';
 		else str = str.toString();
 		return str.replace(/(<([^>]+)>)/gi, '').replace(/\[[^\]]*\]/, '');
 	};
+
 	return (
 		<>
 			<Head>
