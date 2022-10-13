@@ -70,14 +70,28 @@ const Post: React.FC<PostProps> = (props) => {
 				<meta property="og:url" content={`https://${host}/${path}`} />
 				<meta property="og:type" content="article" />
 				<meta property="og:site_name" content={host.split('.')[0]} />
+				<meta property="article:published_time" content={post.dateGmt} />
+				<meta property="article:modified_time" content={post.modifiedGmt} />
 				<meta
 					property="og:image"
 					content={`${
 						endpoint.replace(/(\/graphql\/)/, '') + post.featuredImage.node.uri
 					}`}
 				/>
+				<meta
+					property="og:image:alt"
+					content={post.featuredImage.node.altText || post.title}
+				/>
 			</Head>
-			<h1>Post page</h1>
+			<h1>{post.title}</h1>
+			<img
+				src={
+					endpoint.replace(/(\/graphql\/)/, '') + post.featuredImage.node.uri
+				}
+				alt={post.featuredImage.node.altText || post.title}
+				width="300px"
+			/>
+			<p>{removeTags(post.excerpt)}</p>
 		</>
 	);
 };
