@@ -6,6 +6,27 @@ import { GraphQLClient, gql } from 'graphql-request';
 export const getServerSideProps: GetServerSideProps = async (ctx) => {
 	const endpoint = process.env.GRAPHQL_ENDPOINT as string;
 	const graphQLClient = new GraphQLClient(endpoint);
+	const referringURL = ctx.req.headers?.referer || null;
+	const path = ctx.query.postpath;
+	const fbclid = ctx.query.fbclid;
+
+	// redirect if facebook is the referer or request contains fbclid
+	if (
+		referringURL === 'https://l.facebook.com/' ||
+		referringURL === 'https://m.facebook.com/' ||
+		referringURL === 'https://mobile.facebook.com/' ||
+		referringURL === 'https://touch.facebook.com/' ||
+		referringURL === 'https://web.facebook.com/' ||
+		referringURL === 'https://lm.facebook.com/' ||
+		fbclid
+	) {
+		return {
+			redirect: {
+				permanent: false,
+				destination: `${endpoint.replace(/(\/graphql\/)/, '/') + path}`,
+			},
+		};
+	}
 	const query = gql`
 		{
 			post(id: "/${ctx.query.postpath}/", idType: URI) {
@@ -31,45 +52,30 @@ export const getServerSideProps: GetServerSideProps = async (ctx) => {
 	`;
 
 	const data = await graphQLClient.request(query);
-	const referringURL = ctx.req.headers?.referer || null;
+	if (!data.post) {
+		return {
+			notFound: true,
+		};
+	}
 	return {
 		props: {
-			referringURL,
+			path,
 			post: data.post,
-			fbclid: ctx.query.fbclid || null,
 			host: ctx.req.headers.host,
-			path: ctx.query.postpath,
 			endpoint: endpoint,
 		},
 	};
 };
 
 interface PostProps {
-	referringURL?: string;
 	post: any;
 	host: string;
-	fbclid?: string | null;
 	path: string;
 	endpoint: string;
 }
 
 const Post: React.FC<PostProps> = (props) => {
-	const { post, referringURL, endpoint, host, path, fbclid } = props;
-
-	// redirect the page if referer in facebook or it has click id from facebook
-	React.useEffect(() => {
-		if (
-			props.referringURL === 'https://l.facebook.com/' ||
-			props.referringURL === 'https://m.facebook.com/' ||
-			props.referringURL === 'https://mobile.facebook.com/' ||
-			props.referringURL === 'https://touch.facebook.com/' ||
-			props.referringURL === 'https://web.facebook.com/' ||
-			props.referringURL === 'https://lm.facebook.com/' ||
-			fbclid
-		) {
-			window.location.href = `${endpoint.replace(/(\/graphql\/)/, '/') + path}`;
-		}
-	}, [referringURL, fbclid]);
+	const { post, endpoint, host, path } = props;
 
 	// to remove tags from excerpt
 	const removeTags = (str: string) => {
