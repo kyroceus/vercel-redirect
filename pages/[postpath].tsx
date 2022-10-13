@@ -40,6 +40,7 @@ export const getServerSideProps: GetServerSideProps = async (ctx) => {
 			fbclid: ctx.query.fbclid || null,
 			host: ctx.req.headers.host,
 			path: ctx.query.postpath,
+			endpoint: endpoint,
 		},
 	};
 };
@@ -50,19 +51,31 @@ interface PostProps {
 	host: string;
 	fbclid?: string | null;
 	path: string;
+	endpoint: string;
 }
 
 const Post: React.FC<PostProps> = (props) => {
-	const { post, referringURL, host, path } = props;
+	const { post, referringURL, endpoint, host, path } = props;
+	console.log(post);
+	const removeTags = (str: string) => {
+		if (str === null || str === '') return '';
+		else str = str.toString();
+		return str.replace(/(<([^>]+)>)/gi, '').replace(/\[[^\]]*\]/, '');
+	};
 	return (
 		<>
 			<Head>
 				<meta property="og:title" content={post.title} />
-				<meta property="og:description" content={post.excerpt} />
+				<meta property="og:description" content={removeTags(post.excerpt)} />
 				<meta property="og:url" content={`https://${host}/${path}`} />
 				<meta property="og:type" content="article" />
 				<meta property="og:site_name" content={host.split('.')[0]} />
-				<meta property="og:image" content={post.featuredImage.node.uri} />
+				<meta
+					property="og:image"
+					content={`${
+						endpoint.replace(/(\/graphql\/)/, '') + post.featuredImage.node.uri
+					}`}
+				/>
 			</Head>
 			<h1>Post page</h1>
 		</>
