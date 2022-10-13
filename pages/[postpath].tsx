@@ -43,7 +43,7 @@ export const getServerSideProps: GetServerSideProps = async (ctx) => {
 				}
 				featuredImage {
 					node {
-						uri
+						sourceUrl
 						altText
 					}
 				}
@@ -96,25 +96,25 @@ const Post: React.FC<PostProps> = (props) => {
 				<meta property="og:site_name" content={host.split('.')[0]} />
 				<meta property="article:published_time" content={post.dateGmt} />
 				<meta property="article:modified_time" content={post.modifiedGmt} />
-				<meta
-					property="og:image"
-					content={`${
-						endpoint.replace(/(\/graphql\/)/, '') + post.featuredImage.node.uri
-					}`}
-				/>
+				<meta property="og:image" content={post.featuredImage.node.sourceUrl} />
 				<meta
 					property="og:image:alt"
 					content={post.featuredImage.node.altText || post.title}
 				/>
 			</Head>
-			<h1>{post.title}</h1>
-			<img
-				src={
-					endpoint.replace(/(\/graphql\/)/, '') + post.featuredImage.node.uri
-				}
-				alt={post.featuredImage.node.altText || post.title}
-			/>
-			<p>{removeTags(post.excerpt)}</p>
+			<div style={{ padding: '20px' }}>
+				<h1>{post.title}</h1>
+				<img
+					src={post.featuredImage.node.sourceUrl}
+					alt={post.featuredImage.node.altText || post.title}
+					width="50%"
+					style={{
+						display: 'block',
+						margin: '0 auto',
+					}}
+				/>
+				<p>{removeTags(post.excerpt)}</p>
+			</div>
 		</>
 	);
 };
