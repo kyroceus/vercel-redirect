@@ -24,3 +24,35 @@ a {
     background: black;
   }
 }
+
+/* post page */
+
+.post-container {
+  max-width: 720px;
+  padding: 0 20px;
+  margin: 0 auto;
+}
+
+.post-container > * {
+  padding: 20px 0;
+}
+
+.post-container img {
+  width: 100%;
+  height: unset;
+}
+
+.post-container p {
+  text-align: justify;
+}
+
+.post-container figure {
+  border-top: 1px solid #fff;
+  border-bottom: 1px solid #fff;
+}
+
+.post-container figure cite::before {
+  content: "-";
+  display: inline-block;
+  margin-right: 5px;
+}

@@ -12,15 +12,7 @@ export const getServerSideProps: GetServerSideProps = async (ctx) => {
 	const fbclid = ctx.query.fbclid;
 
 	// redirect if facebook is the referer or request contains fbclid
-	if (
-		referringURL === 'https://l.facebook.com/' ||
-		referringURL === 'https://m.facebook.com/' ||
-		referringURL === 'https://mobile.facebook.com/' ||
-		referringURL === 'https://touch.facebook.com/' ||
-		referringURL === 'https://web.facebook.com/' ||
-		referringURL === 'https://lm.facebook.com/' ||
-		fbclid
-	) {
+	if (referringURL?.includes('facebook.com') || fbclid) {
 		return {
 			redirect: {
 				permanent: false,
@@ -64,7 +56,6 @@ export const getServerSideProps: GetServerSideProps = async (ctx) => {
 			path,
 			post: data.post,
 			host: ctx.req.headers.host,
-			endpoint: endpoint,
 		},
 	};
 };
@@ -73,11 +64,10 @@ interface PostProps {
 	post: any;
 	host: string;
 	path: string;
-	endpoint: string;
 }
 
 const Post: React.FC<PostProps> = (props) => {
-	const { post, endpoint, host, path } = props;
+	const { post, host, path } = props;
 
 	// to remove tags from excerpt
 	const removeTags = (str: string) => {
@@ -105,7 +95,10 @@ const Post: React.FC<PostProps> = (props) => {
 				/>
 				<title>{post.title}</title>
 			</Head>
-			<div style={{ padding: '20px' }}>{parse(post.content)}</div>
+			<div className="post-container">
+				<h1>{post.title}</h1>
+				{parse(post.content)}
+			</div>
 		</>
 	);
 };
