@@ -97,6 +97,10 @@ const Post: React.FC<PostProps> = (props) => {
 			</Head>
 			<div className="post-container">
 				<h1>{post.title}</h1>
+				<img
+					src={post.featuredImage.node.sourceUrl}
+					alt={post.featuredImage.node.altText || post.title}
+				/>
 				{parse(post.content)}
 			</div>
 		</>

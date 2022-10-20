@@ -39,6 +39,7 @@ a {
 
 .post-container img {
   width: 100%;
+  padding: 10px 0;
   height: unset;
 }
 
@@ -55,4 +56,8 @@ a {
   content: "-";
   display: inline-block;
   margin-right: 5px;
+}
+
+.post-container .heateor_sss_sharing_container {
+  display: none;
 }
