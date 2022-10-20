@@ -2,6 +2,7 @@ import React from 'react';
 import Head from 'next/head';
 import { GetServerSideProps } from 'next';
 import { GraphQLClient, gql } from 'graphql-request';
+import parse from 'html-react-parser';
 
 export const getServerSideProps: GetServerSideProps = async (ctx) => {
 	const endpoint = process.env.GRAPHQL_ENDPOINT as string;
@@ -38,6 +39,7 @@ export const getServerSideProps: GetServerSideProps = async (ctx) => {
 				link
 				dateGmt
 				modifiedGmt
+				content
 				author {
 					node {
 						name
@@ -103,20 +105,9 @@ const Post: React.FC<PostProps> = (props) => {
 					property="og:image:alt"
 					content={post.featuredImage.node.altText || post.title}
 				/>
+				<title>{post.title}</title>
 			</Head>
-			<div style={{ padding: '20px' }}>
-				<h1>{post.title}</h1>
-				<img
-					src={post.featuredImage.node.sourceUrl}
-					alt={post.featuredImage.node.altText || post.title}
-					width="50%"
-					style={{
-						display: 'block',
-						margin: '0 auto',
-					}}
-				/>
-				<p>{removeTags(post.excerpt)}</p>
-			</div>
+			<div style={{ padding: '20px' }}>{parse(post.content)}</div>
 		</>
 	);
 };
