@@ -2,7 +2,6 @@ import React from 'react';
 import Head from 'next/head';
 import { GetServerSideProps } from 'next';
 import { GraphQLClient, gql } from 'graphql-request';
-import parse from 'html-react-parser';
 
 export const getServerSideProps: GetServerSideProps = async (ctx) => {
 	const endpoint = process.env.GRAPHQL_ENDPOINT as string;
@@ -103,7 +102,7 @@ const Post: React.FC<PostProps> = (props) => {
 					src={post.featuredImage.node.sourceUrl}
 					alt={post.featuredImage.node.altText || post.title}
 				/>
-				{parse(post.content)}
+				<article dangerouslySetInnerHTML={{ __html: post.content }} />
 			</div>
 		</>
 	);
